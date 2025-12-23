@@ -1,0 +1,1 @@
+cd build && cmake --build . && cd ../build/Debug && MonApp.exe
