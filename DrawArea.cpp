@@ -9,8 +9,14 @@ DrawArea::DrawArea(QWidget *parent)
     , context(new Context())
 {
     std::vector<MyCollider*>& colliders = context->getColliders();
-    PlanCollider* mountain = new PlanCollider(Vec2{-200.0f, 100.0f}, Vec2{-1.0f, -1.0f});
+    PlanCollider* wall1 = new PlanCollider(Vec2{-280.0f, 0.0f}, Vec2{1.0f, 0.0f});
+    PlanCollider* wall2 = new PlanCollider(Vec2{280.0f, 0.0f}, Vec2{-1.0f, 0.0f});
+    PlanCollider* ground = new PlanCollider(Vec2{0.0f, -280.0f}, Vec2{0.0f, 1.0f});
+    PlanCollider* mountain = new PlanCollider(Vec2{-200.0f, -100.0f}, Vec2{1.0f, 1.0f});
     SphereCollider* ball = new SphereCollider(Vec2{100.0f, 0.0f}, 50.0f);
+    colliders.push_back(wall1);
+    colliders.push_back(wall2);
+    colliders.push_back(ground);
     colliders.push_back(mountain);
     colliders.push_back(ball);
 }
@@ -30,6 +36,7 @@ void DrawArea::paintEvent(QPaintEvent *event)
         } else if (const PlanCollider* plane = dynamic_cast<const PlanCollider*>(collider)) {
             Point point = worldToView(plane->getPointOnPlane());
             Vec2 normal = plane->getPlaneNormal();
+            normal.y = -normal.y;
             QLineF line(point.x - 1000 * normal.y, point.y + 1000 * normal.x,
                           point.x + 1000 * normal.y, point.y - 1000 * normal.x);
             p.setPen(QPen(Qt::black, 2));

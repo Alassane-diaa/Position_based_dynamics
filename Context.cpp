@@ -26,8 +26,8 @@ void Context::updatePhysicalSystem(float dt)
     addDynamicContactConstraints(dt);
     applyFriction(dt);
     projectConstraints();
-    updateVelocityAndPosition(dt);
     deleteContactConstraints();
+    updateVelocityAndPosition(dt);
 }
 
 void Context::applyExternalForce(float dt)
@@ -61,30 +61,6 @@ void Context::dampVelocities(float dt)
 
 
 void Context::addDynamicContactConstraints(float dt)
-{
-    const float restitution = 0.2f; // coef de restitution
-    const float groundHeight = -280.0f;
-    for (auto& p : particles) {
-        if (p.predicted_pos.y < groundHeight + p.radius) {
-            p.predicted_pos.y = groundHeight + p.radius;
-            if (p.velocity.y < 0.0f) {
-                p.velocity.y = -p.velocity.y * restitution;
-            }
-        }
-    }
-}
-
-void Context::addStaticContactConstraints(float dt)
-{
-    const float groundHeight = -280.0f;
-    for (Particle &p : particles) {
-        if (p.predicted_pos.y < (groundHeight + p.radius)) {
-            p.predicted_pos.y = groundHeight + p.radius;
-        }
-    }
-}
-
-void Context::projectConstraints()
 {
     for (size_t i = 0; i < particles.size(); ++i) {
         for (size_t j = i + 1; j < particles.size(); ++j) {
@@ -129,15 +105,87 @@ void Context::projectConstraints()
     }
 }
 
+void Context::addStaticContactConstraints(float dt)
+{
+    for (MyCollider* collider : colliders) {
+        for (Particle &p : particles) {
+            if (collider->checkCollision(p)) {
+                if (const SphereCollider* sphere = dynamic_cast<const SphereCollider*>(collider)) {
+                    Vec2 p_to_center;
+                    p_to_center.x = p.predicted_pos.x - sphere->getSphereCenter().x;
+                    p_to_center.y = p.predicted_pos.y - sphere->getSphereCenter().y;
+                    float distance = sqrt(p_to_center.x * p_to_center.x + p_to_center.y * p_to_center.y);
+                    float minDistance = p.radius + sphere->getSphereRadius();
+
+                    if (distance < 0.0001f) { 
+                        p_to_center = Vec2{0.0f, 10.0f}; 
+                        distance = 0.0001f;
+                    }
+
+                    Vec2 n;
+                    n.x = p_to_center.x / distance;
+                    n.y = p_to_center.y / distance;
+
+                    p.predicted_pos.x = sphere->getSphereCenter().x + n.x * minDistance;
+                    p.predicted_pos.y = sphere->getSphereCenter().y + n.y * minDistance;
+                } else if (const PlanCollider* plane = dynamic_cast<const PlanCollider*>(collider)) {
+                    Vec2 planePoint = plane->getPointOnPlane();
+                    Vec2 planeNormal = plane->getPlaneNormal();
+
+                    Vec2 p_to_plane;
+                    p_to_plane.x = p.predicted_pos.x - planePoint.x;
+                    p_to_plane.y = p.predicted_pos.y - planePoint.y;
+
+                    float distance = p_to_plane.x * planeNormal.x + p_to_plane.y * planeNormal.y;
+                    Vec2 q_c;
+                    q_c.x = p.predicted_pos.x - distance * planeNormal.x;
+                    q_c.y = p.predicted_pos.y - distance * planeNormal.y;
+                    
+                    Vec2 p_moins_qc;
+                    p_moins_qc.x = p.predicted_pos.x - q_c.x;
+                    p_moins_qc.y = p.predicted_pos.y - q_c.y;
+
+                    float C = (p_moins_qc.x * planeNormal.x + p_moins_qc.y * planeNormal.y) - p.radius;
+
+                    p.predicted_pos.x -= planeNormal.x * C;
+                    p.predicted_pos.y -= planeNormal.y * C;
+                }    
+            }
+        }
+    }
+}
+
+void Context::projectConstraints()
+{
+}
+
 void Context::applyFriction(float dt)
 {
-    const float groundHeight = -280.0f;
-    const float mu = 8.0f; 
-    for (auto& p : particles) {
-        bool onGround = (p.predicted_pos.y <= groundHeight + p.radius + 0.5f);
-        if (onGround) {
-            float frictionFactor = std::max(0.0f, 1.0f - mu * dt);
-            p.velocity.x *= frictionFactor;
+    const float mu = 50.0f; 
+    for (MyCollider* collider : colliders) {
+        for (Particle &p : particles) {
+            if (collider->checkCollision(p)) {
+                if (const PlanCollider* plane = dynamic_cast<const PlanCollider*>(collider)) {
+                    Vec2 planeNormal = plane->getPlaneNormal();
+                    Vec2 tangent;
+                    tangent.x = -planeNormal.y;
+                    tangent.y = planeNormal.x;
+
+                    float v_n = p.velocity.x * planeNormal.x + p.velocity.y * planeNormal.y;
+                    float v_t = p.velocity.x * tangent.x + p.velocity.y * tangent.y;
+
+                    float frictionImpulse = mu * std::abs(v_n) * dt;
+
+                    if (std::abs(v_t) <= frictionImpulse) {
+                        p.velocity.x -= v_t * tangent.x;
+                        p.velocity.y -= v_t * tangent.y;
+                    } else {
+                        float sign = (v_t > 0) ? 1.0f : -1.0f;
+                        p.velocity.x -= sign * frictionImpulse * tangent.x;
+                        p.velocity.y -= sign * frictionImpulse * tangent.y;
+                    }
+                }
+            }
         }
     }
 }

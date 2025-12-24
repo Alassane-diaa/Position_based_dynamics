@@ -2,6 +2,7 @@
 #define CONTEXT_H
 
 #include <vector>
+#include <iostream>
 
 struct Vec2{
     float x;
@@ -18,13 +19,13 @@ struct Particle{
     float mass;
 };
 
+class MyCollider;
+
 struct StaticConstraint{
-    int particleIndex;
-    Vec2 contactPoint;
-    Vec2 normal;
+    MyCollider* collider;
+    Particle& particle;
 };
 
-class MyCollider;
 
 class Context
 {
@@ -66,12 +67,17 @@ class PlanCollider : public MyCollider
 {
 public:
     PlanCollider(const Vec2& point, const Vec2& normal)
-        : pointOnPlane(point), planeNormal(normal) {}
+        : pointOnPlane(point)
+    {
+        float length = std::sqrt(normal.x * normal.x + normal.y * normal.y);
+        planeNormal.x = normal.x / length;
+        planeNormal.y = normal.y / length;
+    }
     
     bool checkCollision(const Particle& p) override {
         Vec2 p_to_plane;
-        p_to_plane.x = p.pos.x - pointOnPlane.x;
-        p_to_plane.y = p.pos.y - pointOnPlane.y;
+        p_to_plane.x = p.predicted_pos.x - pointOnPlane.x;
+        p_to_plane.y = p.predicted_pos.y - pointOnPlane.y;
         float distance = p_to_plane.x * planeNormal.x + p_to_plane.y * planeNormal.y;
         return distance < p.radius;
     }
