@@ -6,7 +6,16 @@ using force = Vec2;
 Context::Context() 
     : particle_count(0)
     , particles()
+    , colliders()
 {}
+
+Context::~Context()
+{
+    for (MyCollider* collider : colliders) {
+        delete collider;
+    }
+    colliders.clear();
+}
 
 void Context::updatePhysicalSystem(float dt)
 {

@@ -7,8 +7,8 @@
 DrawArea::DrawArea(QWidget *parent)
     : QOpenGLWidget(parent)
     , context(new Context())
-    , colliders()
 {
+    std::vector<MyCollider*>& colliders = context->getColliders();
     PlanCollider* mountain = new PlanCollider(Vec2{-200.0f, 100.0f}, Vec2{-1.0f, -1.0f});
     SphereCollider* ball = new SphereCollider(Vec2{100.0f, 0.0f}, 50.0f);
     colliders.push_back(mountain);
@@ -19,7 +19,7 @@ void DrawArea::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
     p.fillRect(this->rect(), QBrush(QColor(255, 255, 255)));
-    for (const MyCollider* collider : colliders) {
+    for (const MyCollider* collider : context->getColliders()) {
         if (const SphereCollider* sphere = dynamic_cast<const SphereCollider*>(collider)) {
             Point center = worldToView(sphere->getSphereCenter());
             QRectF target(center.x - sphere->getSphereRadius(), center.y - sphere->getSphereRadius(),

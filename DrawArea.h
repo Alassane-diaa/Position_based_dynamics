@@ -23,7 +23,6 @@ public:
     
 private:
     Context* context;
-    std::vector<MyCollider*> colliders;
 };
 
 #endif // DRAWAREA_H

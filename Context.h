@@ -24,19 +24,23 @@ struct StaticConstraint{
     Vec2 normal;
 };
 
+class MyCollider;
+
 class Context
 {
 public:
     Context();
-    ~Context() = default;
+    ~Context();
     void updatePhysicalSystem(float dt);
     std::vector<Particle>& getParticles() { return particles; };
     std::vector<StaticConstraint>& getStaticConstraints() { return staticConstraints; };
+    std::vector<MyCollider*>& getColliders() { return colliders; };
     
 private:
     int particle_count;
     std::vector<Particle> particles;
     std::vector<StaticConstraint> staticConstraints;
+    std::vector<MyCollider*> colliders;
     
     void applyExternalForce(float dt);
     void dampVelocities(float dt);
