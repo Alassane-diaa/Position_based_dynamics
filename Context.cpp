@@ -161,7 +161,7 @@ void Context::projectConstraints()
 
 void Context::applyFriction(float dt)
 {
-    const float mu = 50.0f; 
+    const float mu = 10.0f; 
     for (MyCollider* collider : colliders) {
         for (Particle &p : particles) {
             if (collider->checkCollision(p)) {
