@@ -25,6 +25,8 @@ add_executable(MonApp
     mainwindow.ui
     DrawArea.cpp
     DrawArea.h
+    Context.cpp
+    Context.h
 )
 
 target_link_libraries(MonApp PRIVATE Qt6::Widgets Qt6::OpenGLWidgets)
