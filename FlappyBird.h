@@ -2,6 +2,9 @@
 #define FLAPPYBIRD_H
 
 #include "DrawArea.h"
+#include "ContextFB.h"
+
+using Bird = Particle;
 
 class FlappyBird : public DrawArea
 {
@@ -11,10 +14,12 @@ public:
     FlappyBird(QWidget *parent = nullptr);
     ~FlappyBird() = default;
     void paintEvent(QPaintEvent *event) override;
+    void animate();
     void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
-    Context* context;
+    ContextFB* context;
 
 };
 

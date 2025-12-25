@@ -37,12 +37,11 @@ public:
     std::vector<StaticConstraint>& getStaticConstraints() { return staticConstraints; };
     std::vector<MyCollider*>& getColliders() { return colliders; };
     
-private:
+protected:
     int particle_count;
     std::vector<Particle> particles;
     std::vector<StaticConstraint> staticConstraints;
     std::vector<MyCollider*> colliders;
-    
     void applyExternalForce(float dt);
     void dampVelocities(float dt);
     void updateExpectedPosition(float dt);

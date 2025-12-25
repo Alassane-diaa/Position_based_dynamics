@@ -14,10 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     
     QTimer* timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, draw_area, qOverload<>(&DrawArea::animate));
+    QObject::connect(timer, &QTimer::timeout, flappy_bird, qOverload<>(&FlappyBird::animate));
     timer->start(16);
-
-
-
 }
 
 

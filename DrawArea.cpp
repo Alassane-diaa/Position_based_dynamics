@@ -11,7 +11,7 @@ DrawArea::DrawArea(QWidget *parent)
     std::vector<MyCollider*>& colliders = context->getColliders();
     PlanCollider* wall1 = new PlanCollider(Vec2{-280.0f, 0.0f}, Vec2{1.0f, 0.0f});
     PlanCollider* wall2 = new PlanCollider(Vec2{280.0f, 0.0f}, Vec2{-1.0f, 0.0f});
-    PlanCollider* ground = new PlanCollider(Vec2{0.0f, -280.0f}, Vec2{0.0f, 1.0f});
+    PlanCollider* ground = new PlanCollider(Vec2{0.0f, -260.0f}, Vec2{0.0f, 1.0f});
     PlanCollider* pente = new PlanCollider(Vec2{-200.0f, -100.0f}, Vec2{1.0f, 1.0f});
     SphereCollider* ball = new SphereCollider(Vec2{100.0f, 0.0f}, 50.0f);
     colliders.push_back(wall1);
@@ -24,7 +24,7 @@ DrawArea::DrawArea(QWidget *parent)
 void DrawArea::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
-    p.fillRect(this->rect(), QBrush(QColor(255, 255, 255)));
+    p.fillRect(this->rect(), QBrush(QColor(192, 192, 192)));
     for (const MyCollider* collider : context->getColliders()) {
         if (const SphereCollider* sphere = dynamic_cast<const SphereCollider*>(collider)) {
             Point center = worldToView(sphere->getSphereCenter());
