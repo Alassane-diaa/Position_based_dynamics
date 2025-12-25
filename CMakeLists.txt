@@ -27,6 +27,8 @@ add_executable(MonApp
     DrawArea.h
     Context.cpp
     Context.h
+    FlappyBird.cpp
+    FlappyBird.h
 )
 
 target_link_libraries(MonApp PRIVATE Qt6::Widgets Qt6::OpenGLWidgets)

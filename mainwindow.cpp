@@ -6,13 +6,17 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , draw_area(new DrawArea(this))
+    , flappy_bird(new FlappyBird(this))
 {
     ui->setupUi(this);
-    ui->verticalLayout->addWidget(draw_area);
+    ui->tabWidget->addTab(draw_area, "Simple simulation");
+    ui->tabWidget->addTab(flappy_bird, "Flappy Bird");
     
     QTimer* timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, draw_area, qOverload<>(&DrawArea::animate));
     timer->start(16);
+
+
 
 }
 

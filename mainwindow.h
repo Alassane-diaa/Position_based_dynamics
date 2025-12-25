@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QOpenGLFunctions>
+#include <QTabWidget>
 #include "DrawArea.h"
+#include "FlappyBird.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +24,7 @@ public:
 private:
     Ui::MainWindow *ui;
     DrawArea* draw_area;
+    FlappyBird* flappy_bird;
 
 };
 #endif // MAINWINDOW_H
