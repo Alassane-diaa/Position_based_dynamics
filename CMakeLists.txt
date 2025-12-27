@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.10.1/msvc2022_64") 
-
 if(MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()
