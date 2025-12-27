@@ -51,7 +51,7 @@ void Context::updateExpectedPosition(float dt)
 void Context::dampVelocities(float dt)
 {
     // On prend un facteur d'amortissement exponentiel
-    const float damping = 3.0f; 
+    const float damping = 1.0f; 
     float factor = std::exp(-damping * dt);
     for (auto& p : particles) {
         p.velocity.x *= factor;

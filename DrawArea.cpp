@@ -19,6 +19,11 @@ DrawArea::DrawArea(QWidget *parent)
     colliders.push_back(ground);
     colliders.push_back(pente);
     colliders.push_back(ball);
+
+    std::vector<Particle>& particles = context->getParticles();
+    particles.push_back(Particle{Vec2{-100.0f, 200.0f}, Vec2{-100.0f, 200.0f}, Vec2{0.0f, 0.0f}, 50.0f, 15.0f});
+    particles.push_back(Particle{Vec2{150.0f, 200.0f}, Vec2{150.0f, 200.0f}, Vec2{0.0f, 0.0f}, 40.0f, 10.0f});
+
 }
 
 void DrawArea::paintEvent(QPaintEvent *event)
@@ -31,7 +36,7 @@ void DrawArea::paintEvent(QPaintEvent *event)
             QRectF target(center.x - sphere->getSphereRadius(), center.y - sphere->getSphereRadius(),
                           sphere->getSphereRadius() * 2, sphere->getSphereRadius() * 2);
             p.setPen(Qt::NoPen);
-            p.setBrush(Qt::red);
+            p.setBrush(Qt::black);
             p.drawEllipse(target);
         } else if (const PlanCollider* plane = dynamic_cast<const PlanCollider*>(collider)) {
             Point point = worldToView(plane->getPointOnPlane());
@@ -56,8 +61,8 @@ void DrawArea::paintEvent(QPaintEvent *event)
         QPointF center(view_pos.x, view_pos.y);
         QRectF target(center.x() - particle.radius, center.y() - particle.radius,
                       particle.radius * 2, particle.radius * 2);
-        p.setPen(Qt::blue);
-        p.setBrush(Qt::green);
+        p.setPen(Qt::black);
+        p.setBrush(Qt::white);
         p.drawEllipse(target);
     }
 }
