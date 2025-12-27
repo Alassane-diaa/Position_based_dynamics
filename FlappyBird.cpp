@@ -75,7 +75,7 @@ void FlappyBird::mousePressEvent(QMouseEvent* event)
     std::vector<Particle>& particles = context->getParticles();
     if (!particles.empty()) {
         Particle& bird = particles[0];
-        bird.velocity.y = 1000.0f; 
+        bird.velocity.y = 500.0f; 
     }
 }
 
