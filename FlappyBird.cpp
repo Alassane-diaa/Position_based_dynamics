@@ -6,6 +6,7 @@ FlappyBird::FlappyBird(QWidget *parent)
     : DrawArea(parent)
     , context(new ContextFB())
 {
+    setFocusPolicy(Qt::StrongFocus);
     context->getParticles().push_back(Bird{
         Vec2{-200.0f, 0.0f},       
         Vec2{-200.0f, 0.0f},       
@@ -72,6 +73,7 @@ void FlappyBird::paintEvent(QPaintEvent *event)
 
 void FlappyBird::mousePressEvent(QMouseEvent* event)
 {
+    if (!isOn) isOn=true;
     std::vector<Particle>& particles = context->getParticles();
     if (!particles.empty()) {
         Particle& bird = particles[0];
@@ -88,8 +90,18 @@ void FlappyBird::mouseDoubleClickEvent(QMouseEvent* event)
     }
 }
 
+void FlappyBird::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        isOn = false; 
+    }
+
+      
+}
+
 void FlappyBird::animate()
 {
+    if (!isOn) return;
     const float dt = 0.016f; 
     context->updatePhysicalSystem(dt);
     this->update(); 

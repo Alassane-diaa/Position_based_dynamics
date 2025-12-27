@@ -13,13 +13,17 @@ class FlappyBird : public DrawArea
 public:
     FlappyBird(QWidget *parent = nullptr);
     ~FlappyBird() = default;
-    void paintEvent(QPaintEvent *event) override;
     void animate();
+    
+protected:
+    void paintEvent(QPaintEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 private:
     ContextFB* context;
+    bool isOn = false;
 
 };
 
