@@ -14,11 +14,15 @@ DrawArea::DrawArea(QWidget *parent)
     PlanCollider* ground = new PlanCollider(Vec2{0.0f, -260.0f}, Vec2{0.0f, 1.0f});
     PlanCollider* pente = new PlanCollider(Vec2{-200.0f, -100.0f}, Vec2{1.0f, 1.0f});
     SphereCollider* ball = new SphereCollider(Vec2{100.0f, 0.0f}, 50.0f);
+    BarCollider* bar_oblique = new BarCollider(Vec2{-150.0f, 150.0f}, Vec2{-100.0f, 100.0f}, 10.0f);
+    BarCollider* bar_horizontal = new BarCollider(Vec2{150.0f, 200.0f}, Vec2{200.0f, 200.0f}, 20.0f);
     colliders.push_back(wall1);
     colliders.push_back(wall2);
     colliders.push_back(ground);
     colliders.push_back(pente);
     colliders.push_back(ball);
+    colliders.push_back(bar_oblique);
+    colliders.push_back(bar_horizontal);
 
     std::vector<Particle>& particles = context->getParticles();
     particles.push_back(Particle{Vec2{-100.0f, 200.0f}, Vec2{-100.0f, 200.0f}, Vec2{0.0f, 0.0f}, 50.0f, 15.0f});
@@ -54,6 +58,26 @@ void DrawArea::paintEvent(QPaintEvent *event)
             p.setPen(Qt::NoPen);
             p.setBrush(Qt::black);
             p.drawPolygon(forbidden);
+        } else if (const BarCollider* bar = dynamic_cast<const BarCollider*>(collider)) {
+            Point start = worldToView(bar->getStartPoint());
+            Point end = worldToView(bar->getEndPoint());
+            Vec2 barVector;
+            barVector.x = end.x - start.x;
+            barVector.y = end.y - start.y;
+            float length = std::sqrt(barVector.x * barVector.x + barVector.y * barVector.y);
+            Vec2 unitPerp;
+            unitPerp.x = -barVector.y / length;
+            unitPerp.y = barVector.x / length;
+            float half_thickness = bar->getBarThickness() / 2.0f;
+
+            QPolygonF rectangle;
+            rectangle << QPointF(start.x + unitPerp.x * half_thickness, start.y + unitPerp.y * half_thickness)
+                      << QPointF(end.x + unitPerp.x * half_thickness, end.y + unitPerp.y * half_thickness)
+                      << QPointF(end.x - unitPerp.x * half_thickness, end.y - unitPerp.y * half_thickness)
+                      << QPointF(start.x - unitPerp.x * half_thickness, start.y - unitPerp.y * half_thickness);
+            p.setPen(Qt::NoPen);
+            p.setBrush(Qt::black);
+            p.drawPolygon(rectangle);
         }
     }
     for (const Particle& particle : context->getParticles()) {

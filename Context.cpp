@@ -59,7 +59,6 @@ void Context::dampVelocities(float dt)
     }
 }
 
-
 void Context::addDynamicContactConstraints(float dt)
 {
     for (size_t i = 0; i < particles.size(); ++i) {
@@ -149,7 +148,37 @@ void Context::addStaticContactConstraints(float dt)
 
                     p.predicted_pos.x -= planeNormal.x * C;
                     p.predicted_pos.y -= planeNormal.y * C;
-                }    
+                } else if (const BarCollider* bar = dynamic_cast<const BarCollider*>(collider)) {
+                    Vec2 ab;
+                    ab.x = bar->getEndPoint().x - bar->getStartPoint().x;
+                    ab.y = bar->getEndPoint().y - bar->getStartPoint().y;
+                    Vec2 ap;
+                    ap.x = p.predicted_pos.x - bar->getStartPoint().x;
+                    ap.y = p.predicted_pos.y - bar->getStartPoint().y;
+                    float ab_squared = ab.x * ab.x + ab.y * ab.y;
+                    float ap_ab = ap.x * ab.x + ap.y * ab.y;
+                    float t = ap_ab / ab_squared;
+                    t = std::fmax(0.0f, std::fmin(1.0f, t));
+                    Vec2 closest;
+                    closest.x = bar->getStartPoint().x + t * ab.x;
+                    closest.y = bar->getStartPoint().y + t * ab.y;
+                    Vec2 pc;
+                    pc.x = p.predicted_pos.x - closest.x;
+                    pc.y = p.predicted_pos.y - closest.y;
+                    float distance = sqrt(pc.x * pc.x + pc.y * pc.y);
+                    float radiusSum = p.radius + bar->getBarThickness() / 2.0;
+                    if (distance < 0.0001f) {
+                        pc = Vec2{0.0f, 10.0f};
+                        distance = 0.0001f;
+                    }
+                    Vec2 n;
+                    n.x = pc.x / distance;
+                    n.y = pc.y / distance;
+                    float C = distance - radiusSum;
+                    p.predicted_pos.x -= n.x * C;
+                    p.predicted_pos.y -= n.y * C;
+                    
+                }
             }
         }
     }

@@ -112,4 +112,49 @@ private:
     float sphereRadius;
 };
 
+class BarCollider : public MyCollider
+{
+public:
+    BarCollider(const Point& start, const Point& end, float thickness)
+        : startPoint(start), endPoint(end), barThickness(thickness) {}
+    
+    bool checkCollision(const Particle& p) override {
+        Vec2 ab;
+        ab.x = endPoint.x - startPoint.x;
+        ab.y = endPoint.y - startPoint.y;
+
+        Vec2 ap;
+        ap.x = p.predicted_pos.x - startPoint.x;
+        ap.y = p.predicted_pos.y - startPoint.y;
+
+        float ab_squared = ab.x * ab.x + ab.y * ab.y;
+        float ap_ab = ap.x * ab.x + ap.y * ab.y;
+        float t = ap_ab / ab_squared;
+
+        t = std::fmax(0.0f, std::fmin(1.0f, t));
+
+        Vec2 closest;
+        closest.x = startPoint.x + t * ab.x;
+        closest.y = startPoint.y + t * ab.y;
+
+        Vec2 pc;
+        pc.x = p.predicted_pos.x - closest.x;
+        pc.y = p.predicted_pos.y - closest.y;
+
+        float distanceSq = pc.x * pc.x + pc.y * pc.y;
+        float radiusSum = p.radius + barThickness / 2.0f;
+
+        return distanceSq < (radiusSum * radiusSum);
+    }
+
+    Point getStartPoint() const { return startPoint; }
+    Point getEndPoint() const { return endPoint; }
+    float getBarThickness() const { return barThickness; }
+
+private:
+    Point startPoint;
+    Point endPoint;
+    float barThickness;
+};
+
 #endif // CONTEXT_H
