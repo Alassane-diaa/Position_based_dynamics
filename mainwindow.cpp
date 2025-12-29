@@ -9,8 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     , flappy_bird(new FlappyBird(this))
 {
     ui->setupUi(this);
+    this->setFixedSize(this->size());
     ui->tabWidget->addTab(draw_area, "Simple simulation");
     ui->tabWidget->addTab(flappy_bird, "Flappy Bird");
+
     
     QTimer* timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, draw_area, qOverload<>(&DrawArea::animate));

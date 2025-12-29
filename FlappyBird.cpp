@@ -20,7 +20,9 @@ FlappyBird::FlappyBird(QWidget *parent)
     
     context->getColliders().push_back(new PipeCollider(150.0f, 50.0f, 120.0f)); 
     context->getColliders().push_back(new PipeCollider(350.0f, -30.0f, 120.0f));
-    context->getColliders().push_back(new PipeCollider(550.0f, 70.0f, 120.0f)); 
+    context->getColliders().push_back(new PipeCollider(550.0f, 100.0f, 120.0f)); 
+    context->getColliders().push_back(new PipeCollider(750.0f, -60.0f, 120.0f));
+    context->getColliders().push_back(new PipeCollider(950.0f, -160.0f, 120.0f));
 
 }
 

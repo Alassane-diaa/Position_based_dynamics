@@ -9,10 +9,10 @@ DrawArea::DrawArea(QWidget *parent)
     , context(new Context())
 {
     std::vector<MyCollider*>& colliders = context->getColliders();
-    PlanCollider* wall1 = new PlanCollider(Vec2{-280.0f, 0.0f}, Vec2{1.0f, 0.0f});
-    PlanCollider* wall2 = new PlanCollider(Vec2{280.0f, 0.0f}, Vec2{-1.0f, 0.0f});
+    PlanCollider* wall1 = new PlanCollider(Vec2{-380.0f, 0.0f}, Vec2{1.0f, 0.0f});
+    PlanCollider* wall2 = new PlanCollider(Vec2{380.0f, 0.0f}, Vec2{-1.0f, 0.0f});
     PlanCollider* ground = new PlanCollider(Vec2{0.0f, -260.0f}, Vec2{0.0f, 1.0f});
-    PlanCollider* pente = new PlanCollider(Vec2{-200.0f, -100.0f}, Vec2{1.0f, 1.0f});
+    PlanCollider* pente = new PlanCollider(Vec2{-300.0f, -150.0f}, Vec2{1.0f, 1.0f});
     SphereCollider* ball = new SphereCollider(Vec2{100.0f, 0.0f}, 50.0f);
     BarCollider* bar_oblique = new BarCollider(Vec2{-150.0f, 150.0f}, Vec2{-100.0f, 100.0f}, 10.0f);
     BarCollider* bar_horizontal = new BarCollider(Vec2{150.0f, 200.0f}, Vec2{200.0f, 200.0f}, 20.0f);

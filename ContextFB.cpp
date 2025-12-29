@@ -47,8 +47,8 @@ void ContextFB::movePipes(float dt)
     for (MyCollider* collider : colliders) {
         if (PipeCollider* pipe = dynamic_cast<PipeCollider*>(collider)) {
             pipe->getPosX() -= speed * dt;
-            if (pipe->getPosX() < -350.0f) { 
-                pipe->getPosX() = 350.0f; 
+            if (pipe->getPosX() < -450.0f) { 
+                pipe->getPosX() = 550.0f; 
             }
         }
     }
