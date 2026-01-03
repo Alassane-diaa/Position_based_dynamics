@@ -26,8 +26,7 @@ DrawArea::DrawArea(QWidget *parent)
 
     std::vector<Particle>& particles = context->getParticles();
     particles.push_back(Particle{Vec2{-100.0f, 200.0f}, Vec2{-100.0f, 200.0f}, Vec2{0.0f, 0.0f}, 50.0f, 15.0f});
-    particles.push_back(Particle{Vec2{150.0f, 200.0f}, Vec2{150.0f, 200.0f}, Vec2{0.0f, 0.0f}, 40.0f, 10.0f});
-
+    particles.push_back(Particle{Vec2{200.0f, 150.0f}, Vec2{200.0f, 150.0f}, Vec2{0.0f, 0.0f}, 40.0f, 10.0f});
 }
 
 void DrawArea::paintEvent(QPaintEvent *event)

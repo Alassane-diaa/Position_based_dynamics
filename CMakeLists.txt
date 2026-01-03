@@ -23,6 +23,8 @@ add_executable(MonApp
     mainwindow.ui
     DrawArea.cpp
     DrawArea.h
+    DrawAreaFancy.cpp
+    DrawAreaFancy.h
     Context.cpp
     Context.h
     MyCollider.cpp

@@ -5,6 +5,7 @@
 #include <QOpenGLFunctions>
 #include <QTabWidget>
 #include "DrawArea.h"
+#include "DrawAreaFancy.h"
 #include "FlappyBird.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,6 +25,7 @@ public:
 private:
     Ui::MainWindow *ui;
     DrawArea* draw_area;
+    DrawAreaFancy* draw_area_fancy;
     FlappyBird* flappy_bird;
 
 };

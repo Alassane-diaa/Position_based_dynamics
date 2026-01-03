@@ -11,15 +11,14 @@ class DrawArea : public QOpenGLWidget
 
 public:
     DrawArea(QWidget *parent = nullptr);
-    ~DrawArea() = default;
+    virtual ~DrawArea() = default;
     void paintEvent(QPaintEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
-    void animate();
+    virtual void animate();
     Point worldToView(const Point& world_pos);
     Point viewToWorld(const Point& view_pos);
     
-    
-private:
+protected:
     Context* context;
 };
 
