@@ -4,8 +4,6 @@
 #include <QOpenGLWidget>
 #include "Context.h"
 
-using Point = Vec2;
-
 
 class DrawArea : public QOpenGLWidget
 {

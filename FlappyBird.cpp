@@ -4,7 +4,7 @@
 
 FlappyBird::FlappyBird(QWidget *parent)
     : DrawArea(parent)
-    , context(new ContextFB())
+    , context(new Context())
 {
     setFocusPolicy(Qt::StrongFocus);
     context->getParticles().push_back(Bird{
@@ -106,6 +106,20 @@ void FlappyBird::animate()
     if (!isOn) return;
     const float dt = 0.016f; 
     context->updatePhysicalSystem(dt);
+    movePipes(dt);
     this->update(); 
+}
+
+void FlappyBird::movePipes(float dt)
+{
+    const float speed = 100.0f; 
+    for (MyCollider* collider : context->getColliders()) {
+        if (PipeCollider* pipe = dynamic_cast<PipeCollider*>(collider)) {
+            pipe->getPosX() -= speed * dt;
+            if (pipe->getPosX() < -450.0f) { 
+                pipe->getPosX() = 550.0f; 
+            }
+        }
+    }
 }
 

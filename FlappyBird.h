@@ -2,7 +2,7 @@
 #define FLAPPYBIRD_H
 
 #include "DrawArea.h"
-#include "ContextFB.h"
+#include "Context.h"
 
 using Bird = Particle;
 
@@ -22,8 +22,9 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    ContextFB* context;
+    Context* context;
     bool isOn = false;
+    void movePipes(float dt);
 
 };
 
