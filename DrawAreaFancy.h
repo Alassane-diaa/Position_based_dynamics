@@ -12,6 +12,7 @@ public:
     ~DrawAreaFancy() = default;
     void paintEvent(QPaintEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 };
 
 #endif // DRAWAREAFANCY_H

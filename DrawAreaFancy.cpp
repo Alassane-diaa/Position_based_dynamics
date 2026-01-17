@@ -1,6 +1,7 @@
 #include "DrawAreaFancy.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QLinearGradient>
 #include <QRadialGradient>
 #include <cstdlib>
@@ -11,6 +12,7 @@ DrawAreaFancy::DrawAreaFancy(QWidget *parent)
 {
     context->getParticles().clear();
     context->getColliders().clear();
+    context->getParticleLinks().clear();
 
     std::srand(std::time(nullptr));
 
@@ -141,14 +143,37 @@ void DrawAreaFancy::paintEvent(QPaintEvent *event)
         
         colorIndex++;
     }
+    
+    const std::vector<Particle>& particles = context->getParticles();
+    for (const ParticleLink& link : context->getParticleLinks()) {
+        if (link.particleA < 0 || link.particleA >= (int)particles.size() ||
+            link.particleB < 0 || link.particleB >= (int)particles.size()) continue;
+        Vec2 posA = worldToView(particles[link.particleA].predicted_pos);
+        Vec2 posB = worldToView(particles[link.particleB].predicted_pos);
+        p.setPen(QPen(QColor(255, 255, 255, 180), 3));
+        p.drawLine(QPointF(posA.x, posA.y), QPointF(posB.x, posB.y));
+    }
 }
 
 void DrawAreaFancy::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF point = event->pos();
     Vec2 world_pos = viewToWorld(Vec2{(float)point.x(), (float)point.y()});
-    float radius = 10.0f + (std::rand() % 15);
-    float mass = radius / 3.0f;
-    context->getParticles().push_back(Particle{world_pos, world_pos, Vec2{0, 0}, radius, mass});
+    
+    if (spawnMode == SpawnMode::SingleParticle) {
+        float radius = 10.0f + (std::rand() % 15);
+        float mass = radius / 3.0f;
+        context->getParticles().push_back(Particle{world_pos, world_pos, Vec2{0, 0}, radius, mass});
+    } else {
+        context->addLinkedStructure(world_pos, 40.0f, 10.0f, 5.0f, 0.9f);
+    }
     update();
+}
+
+void DrawAreaFancy::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_S) {
+        toggleSpawnMode();
+    }
+    QOpenGLWidget::keyPressEvent(event);
 }
