@@ -5,9 +5,12 @@
 #include <iostream>
 #include "MyCollider.h"
 
-struct StaticConstraint{
-    MyCollider* collider;
-    Particle& particle;
+
+struct ParticleLink {
+    int particleA;
+    int particleB; 
+    float restLength;
+    float stiffness;    
 };
 
 
@@ -18,22 +21,23 @@ public:
     ~Context();
     void updatePhysicalSystem(float dt);
     std::vector<Particle>& getParticles() { return particles; };
-    std::vector<StaticConstraint>& getStaticConstraints() { return staticConstraints; };
     std::vector<MyCollider*>& getColliders() { return colliders; };
+    std::vector<ParticleLink>& getParticleLinks() { return particleLinks; };
+    
+    void addLinkedStructure(const Vec2& center, float size, float particleRadius, float particleMass, float linkStiffness = 0.8f);
     
 protected:
     int particle_count;
     std::vector<Particle> particles;
-    std::vector<StaticConstraint> staticConstraints;
+    std::vector<ParticleLink> particleLinks;
     std::vector<MyCollider*> colliders;
     void applyExternalForce(float dt);
     void dampVelocities(float dt);
     void updateExpectedPosition(float dt);
     void addDynamicContactConstraints(float dt);
     void addStaticContactConstraints(float dt);
-    void projectConstraints();
+    void projectParticleLinks(); 
     void applyFriction(float dt);
-    void deleteContactConstraints();
     void updateVelocityAndPosition(float dt);
 
 };

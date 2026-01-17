@@ -2,12 +2,16 @@
 #include "Context.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <iostream>
 
 DrawArea::DrawArea(QWidget *parent)
     : QOpenGLWidget(parent)
     , context(new Context())
 {
+    // Permet de recevoir les événements clavier
+    setFocusPolicy(Qt::StrongFocus);
+    
     std::vector<MyCollider*>& colliders = context->getColliders();
     PlanCollider* wall1 = new PlanCollider(Vec2{-380.0f, 0.0f}, Vec2{1.0f, 0.0f});
     PlanCollider* wall2 = new PlanCollider(Vec2{380.0f, 0.0f}, Vec2{-1.0f, 0.0f});
@@ -27,6 +31,8 @@ DrawArea::DrawArea(QWidget *parent)
     std::vector<Particle>& particles = context->getParticles();
     particles.push_back(Particle{Vec2{-100.0f, 200.0f}, Vec2{-100.0f, 200.0f}, Vec2{0.0f, 0.0f}, 50.0f, 15.0f});
     particles.push_back(Particle{Vec2{200.0f, 150.0f}, Vec2{200.0f, 150.0f}, Vec2{0.0f, 0.0f}, 40.0f, 10.0f});
+
+    context->addLinkedStructure(Vec2{0.0f, 100.0f}, 40.0f, 15.0f, 5.0f, 0.9f);
 }
 
 void DrawArea::paintEvent(QPaintEvent *event)
@@ -88,14 +94,40 @@ void DrawArea::paintEvent(QPaintEvent *event)
         p.setBrush(Qt::white);
         p.drawEllipse(target);
     }
+    
+    const std::vector<Particle>& particles = context->getParticles();
+    for (const ParticleLink& link : context->getParticleLinks()) {
+        if (link.particleA < 0 || link.particleA >= (int)particles.size() ||
+            link.particleB < 0 || link.particleB >= (int)particles.size()) {
+            continue;
+        }
+        Vec2 posA = worldToView(particles[link.particleA].predicted_pos);
+        Vec2 posB = worldToView(particles[link.particleB].predicted_pos);
+        p.setPen(QPen(Qt::blue, 2));
+        p.drawLine(QPointF(posA.x, posA.y), QPointF(posB.x, posB.y));
+    }
 }
 
 void DrawArea::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF point = event->pos();
     Vec2 world_pos = viewToWorld(Vec2{(float)point.x(), (float)point.y()});
-    context->getParticles().push_back(Particle{world_pos, world_pos, Vec2{0, 0}, 20.0f, 5.0f});
+    
+    if (spawnMode == SpawnMode::SingleParticle) {
+        context->getParticles().push_back(Particle{world_pos, world_pos, Vec2{0, 0}, 20.0f, 5.0f});
+    } else {
+        context->addLinkedStructure(world_pos, 30.0f, 10.0f, 15.0f, 0.9f);
+    }
     update();
+}
+
+void DrawArea::toggleSpawnMode()
+{
+    if (spawnMode == SpawnMode::SingleParticle) {
+        spawnMode = SpawnMode::LinkedStructure;
+    } else {
+        spawnMode = SpawnMode::SingleParticle;
+    }
 }
 
 Point DrawArea::worldToView(const Point& world_pos)
@@ -119,4 +151,12 @@ void DrawArea::animate()
     if (context->getParticles().empty()) return;
     context->updatePhysicalSystem(0.016f);
     update();
+}
+
+void DrawArea::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_S) {
+        toggleSpawnMode();
+    }
+    QOpenGLWidget::keyPressEvent(event);
 }

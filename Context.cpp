@@ -7,6 +7,7 @@ using force = Vec2;
 Context::Context() 
     : particle_count(0)
     , particles()
+    , particleLinks()
     , colliders()
 {}
 
@@ -25,9 +26,8 @@ void Context::updatePhysicalSystem(float dt)
     updateExpectedPosition(dt);
     addStaticContactConstraints(dt);
     addDynamicContactConstraints(dt);
+    projectParticleLinks(); 
     applyFriction(dt);
-    projectConstraints();
-    deleteContactConstraints();
     updateVelocityAndPosition(dt);
 }
 
@@ -52,7 +52,7 @@ void Context::updateExpectedPosition(float dt)
 void Context::dampVelocities(float dt)
 {
     // On prend un facteur d'amortissement exponentiel
-    const float damping = 0.5f; 
+    const float damping = 1.0f; 
     float factor = std::exp(-damping * dt);
     for (auto& p : particles) {
         p.velocity.x *= factor;
@@ -116,8 +116,74 @@ void Context::addStaticContactConstraints(float dt)
     }
 }
 
-void Context::projectConstraints()
+void Context::projectParticleLinks()
 {
+    for (ParticleLink& link : particleLinks) {
+        if (link.particleA < 0 || link.particleA >= (int)particles.size() ||
+            link.particleB < 0 || link.particleB >= (int)particles.size()) {
+            continue;
+        }
+        
+        Particle& p1 = particles[link.particleA];
+        Particle& p2 = particles[link.particleB];
+        
+        Vec2 delta;
+        delta.x = p2.predicted_pos.x - p1.predicted_pos.x;
+        delta.y = p2.predicted_pos.y - p1.predicted_pos.y;
+        
+        float currentLength = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+        
+        if (currentLength < 0.0001f) continue;
+        
+        float diff = (currentLength - link.restLength) / currentLength;
+        
+        float w1 = 1.0f / p1.mass;
+        float w2 = 1.0f / p2.mass;
+        float wTotal = w1 + w2;
+        
+        if (wTotal == 0) continue;
+        
+        float correction = diff * link.stiffness;
+        
+        p1.predicted_pos.x += delta.x * correction * (w1 / wTotal);
+        p1.predicted_pos.y += delta.y * correction * (w1 / wTotal);
+        
+        p2.predicted_pos.x -= delta.x * correction * (w2 / wTotal);
+        p2.predicted_pos.y -= delta.y * correction * (w2 / wTotal);
+   }
+}
+
+void Context::addLinkedStructure(const Vec2& center, float size, float particleRadius, float particleMass, float linkStiffness)
+{
+    float halfSize = size / 2.0f;
+    
+    int startIndex = particles.size();
+    
+    Vec2 positions[4] = {
+        {center.x - halfSize, center.y + halfSize},
+        {center.x + halfSize, center.y + halfSize},
+        {center.x + halfSize, center.y - halfSize},
+        {center.x - halfSize, center.y - halfSize}
+    };
+    
+    for (int i = 0; i < 4; ++i) {
+        particles.push_back(Particle{
+            positions[i],
+            positions[i],
+            Vec2{0.0f, 0.0f},
+            particleRadius,
+            particleMass
+        });
+    }
+
+    particleLinks.push_back(ParticleLink{startIndex + 0, startIndex + 1, size, linkStiffness});
+    particleLinks.push_back(ParticleLink{startIndex + 1, startIndex + 2, size, linkStiffness});
+    particleLinks.push_back(ParticleLink{startIndex + 2, startIndex + 3, size, linkStiffness});
+    particleLinks.push_back(ParticleLink{startIndex + 3, startIndex + 0, size, linkStiffness});
+    
+    float diagonalLength = size * std::sqrt(2.0f);
+    particleLinks.push_back(ParticleLink{startIndex + 0, startIndex + 2, diagonalLength, linkStiffness});
+    particleLinks.push_back(ParticleLink{startIndex + 1, startIndex + 3, diagonalLength, linkStiffness});
 }
 
 void Context::applyFriction(float dt)
@@ -149,11 +215,6 @@ void Context::applyFriction(float dt)
             }
         }
     }
-}
-
-void Context::deleteContactConstraints()
-{
-    // Pas compris, à faire après
 }
 
 void Context::updateVelocityAndPosition(float dt)
