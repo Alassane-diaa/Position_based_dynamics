@@ -71,6 +71,10 @@ void FlappyBird::paintEvent(QPaintEvent *event)
         p.setBrush(Qt::black);
         p.drawEllipse(QPointF(center.x() + 6, center.y() - 3), 2, 2);
     }
+
+    p.setPen(Qt::black);
+    p.drawText(10, 20, "Clic : Sauter  | Echap : Mettre en pause");
+
 }
 
 void FlappyBird::mousePressEvent(QMouseEvent* event)

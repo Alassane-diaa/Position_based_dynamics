@@ -153,6 +153,10 @@ void DrawAreaFancy::paintEvent(QPaintEvent *event)
         p.setPen(QPen(QColor(255, 255, 255, 180), 3));
         p.drawLine(QPointF(posA.x, posA.y), QPointF(posB.x, posB.y));
     }
+
+    p.setPen(Qt::black);
+    p.drawText(10, 20, "Double-clic : générer une particule  | S : changer type de particule");
+
 }
 
 void DrawAreaFancy::mouseDoubleClickEvent(QMouseEvent* event)

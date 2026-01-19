@@ -7,6 +7,7 @@
 #include "DrawArea.h"
 #include "DrawAreaFancy.h"
 #include "FlappyBird.h"
+#include "ClothSimulation.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +28,7 @@ private:
     DrawArea* draw_area;
     DrawAreaFancy* draw_area_fancy;
     FlappyBird* flappy_bird;
+    ClothSimulation* cloth_sim;
 
 };
 #endif // MAINWINDOW_H

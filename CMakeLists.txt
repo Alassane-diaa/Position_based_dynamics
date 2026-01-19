@@ -25,6 +25,8 @@ add_executable(MonApp
     DrawArea.h
     DrawAreaFancy.cpp
     DrawAreaFancy.h
+    ClothSimulation.cpp
+    ClothSimulation.h
     Context.cpp
     Context.h
     MyCollider.cpp
